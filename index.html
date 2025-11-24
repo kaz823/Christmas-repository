@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>サンタが今年も来てくれますように。</title>
+<style>
+  body {
+    background: #000;
+    color: #fff;
+    font-family: "Yu Mincho", serif;
+    text-align: center;
+    padding-top: 100px;
+    line-height: 2;
+    margin: 0;
+    overflow: hidden;
+  }
+  input, button {
+    padding: 10px;
+    font-size: 16px;
+    font-family: "Yu Mincho", serif;
+    margin-top: 10px;
+  }
+  input { width: 200px; }
+  .error { color: #f44; margin-top: 10px; }
+  #snow {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<p>パスワードを入力してね。</p>
+
+<input id="pass" type="password" placeholder="パスワード">
+<br>
+<button onclick="check()">開く</button>
+<div id="error" class="error"></div>
+
+<canvas id="snow"></canvas>
+
+<script>
+// パスワードチェック
+function check() {
+  const p = document.getElementById("pass").value;
+  const correct = "1225"; // パスワード
+  if (p === correct) {
+    window.location.href = "ritual.html"; // 次のページへ
+  } else {
+    document.getElementById("error").innerText = "パスワードが違います。";
+  }
+}
+
+// 雪アニメーション
+const canvas = document.getElementById("snow");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const numFlakes = 100;
+const flakes = [];
+
+for(let i=0; i<numFlakes; i++){
+  flakes.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*4 + 1,
+    d: Math.random()*numFlakes
+  });
+}
+
+function drawFlakes() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  for(let i=0;i<numFlakes;i++){
+    let f = flakes[i];
+    ctx.moveTo(f.x,f.y);
+    ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+  }
+  ctx.fill();
+  moveFlakes();
+}
+
+let angle = 0;
+function moveFlakes() {
+  angle += 0.01;
+  for(let i=0;i<numFlakes;i++){
+    let f = flakes[i];
+    f.y += Math.cos(angle + f.d) + 1 + f.r/2;
+    f.x += Math.sin(angle) * 2;
+
+    if(f.y > canvas.height){
+      f.y = 0;
+      f.x = Math.random()*canvas.width;
+    }
+  }
+}
+
+setInterval(drawFlakes, 30);
+
+// リサイズ対応
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
